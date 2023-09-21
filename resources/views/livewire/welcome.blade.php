@@ -1,3 +1,3 @@
-<div>
-    {{-- Close your eyes. Count to one. That is how long forever feels. --}}
+<div class="text-blue-500 bg-slate-700 w-full p-20">
+    Cristiano
 </div>
