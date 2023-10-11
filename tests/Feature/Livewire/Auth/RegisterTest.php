@@ -35,9 +35,18 @@ it('should be able to register a new user in the system', function () {
 });
 
 test('validation rules', function ($ctx) {
-    Livewire::test(Register::class)
-        ->set($ctx->field, $ctx->value)
-        ->call('submit')
+    if ($ctx->rule == 'unique') {
+        User::factory()->create([$ctx->field => $ctx->value]);
+    }
+
+    $livewire = Livewire::test(Register::class)
+        ->set($ctx->field, $ctx->value);
+
+    if (property_exists($ctx, 'aValue')) {
+        $livewire->set($ctx->aField, $ctx->aValue);
+    }
+
+    $livewire->call('submit')
         ->assertHasErrors([$ctx->field => $ctx->rule]);
 })->with([
     'name::required' => (object)['field' => 'name', 'value' => '', 'rule' => 'required'],
@@ -45,6 +54,7 @@ test('validation rules', function ($ctx) {
     'email::required' => (object)['field' => 'email', 'value' => '', 'rule' => 'required'],
     'email::email' => (object)['field' => 'email', 'value' => 'not-an-email', 'rule' => 'email'],
     'email::confirmed' => (object)['field' => 'email', 'value' => 'joe@doe.com', 'rule' => 'confirmed'],
+    'email::unique' => (object)['field' => 'email', 'value' => 'joe@doe.com', 'rule' => 'unique', 'aField' => 'email_confirmation', 'aValue' => 'joe@doe.com'],
     'email::max:255' => (object)['field' => 'email', 'value' => str_repeat('*' . '@doe.com', 256), 'rule' => 'max'],
     'password::required' => (object)['field' => 'password', 'value' => '', 'rule' => 'required'],
 ]);
