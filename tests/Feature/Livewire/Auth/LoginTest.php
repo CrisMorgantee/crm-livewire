@@ -4,7 +4,6 @@ use App\Livewire\Auth\Login;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Livewire\Livewire;
-use function Pest\Laravel\actingAs;
 
 it('renders successfully', function () {
     Livewire::test(Login::class)
@@ -21,9 +20,7 @@ it('should be able to login', function () {
         ->assertHasNoErrors()
         ->assertRedirect(RouteServiceProvider::HOME);
 
-    actingAs($user)->assertAuthenticated();
-
     expect(auth()->check())
         ->toBeTrue()
-        ->end(auth()->user())->id->toBe($user->id);
+        ->and(auth()->user())->id->toBe($user->id);
 });
