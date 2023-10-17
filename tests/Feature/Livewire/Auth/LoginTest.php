@@ -5,12 +5,12 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Livewire\Livewire;
 
-it('renders successfully', function () {
+it('renders successfully', function() {
     Livewire::test(Login::class)
         ->assertOk();
 });
 
-it('should be able to login', function () {
+it('should be able to login', function() {
     $user = User::factory()->create(['email' => 'joe@doe.com', 'password' => 'password']);
 
     Livewire::test(Login::class)
