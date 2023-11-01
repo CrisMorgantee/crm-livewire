@@ -15,10 +15,6 @@ test('need to receive a valid token  whit a combination with the email', functio
         ->set('email', $user->email)
         ->call('requestPasswordRecovery');
 
-    $passwordResetToken = DB::table('password_reset_tokens')
-        ->where('email', $user->email)
-        ->first();
-
     Notification::assertSentTo(
         $user,
         ResetPassword::class,
