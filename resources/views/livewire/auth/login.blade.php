@@ -1,4 +1,9 @@
 <x-card title="Login" class="mx-auto w-[420px]" shadow>
+    @if($message = session()->get('status token'))
+        <x-alert icon="o-exclamation-triangle" class="alert-error text-xs mb-4">
+            {{$message}}
+        </x-alert>
+    @endif
 
     @if($errors->hasAny(['invalidCredentials', 'rateLimit']))
         <x-alert icon="o-exclamation-triangle" class="alert-warning text-xs mb-4">
