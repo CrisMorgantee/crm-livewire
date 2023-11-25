@@ -10,7 +10,7 @@ class PermissionsSeeder extends Seeder
     public function run(): void
     {
         Permission::query()->insert([
-            'name' => 'doSomething',
+            'name' => 'be an admin',
         ]);
     }
 }

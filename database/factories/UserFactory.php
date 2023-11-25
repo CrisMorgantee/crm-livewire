@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -34,5 +35,12 @@ class UserFactory extends Factory
         return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function withPermission(string $name): static
+    {
+        return $this->afterCreating(
+            fn(User $user) => $user->givePermissionTo($name)
+        );
     }
 }
