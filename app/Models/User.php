@@ -38,9 +38,7 @@ class User extends Authenticatable
 
     public function givePermissionTo(string $name): void
     {
-        $this->permissions()->save(
-            Permission::firstOrNew(['name' => $name])
-        );
+        $this->permissions()->firstOrCreate(compact('name'));
     }
 
     public function hasPermissionTo(string $name): bool
