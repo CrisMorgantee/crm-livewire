@@ -66,3 +66,25 @@ test('should allow the access to admin pages if the user has the permission to b
         ->get(route('admin.dashboard'))
         ->assertOk();
 });
+
+test("let's make sure that we are using cache to store user permissions", function() {
+    $user = User::factory()->create();
+
+    $user->givePermissionTo('be an admin');
+
+    $cacheKey = "user::{$user->id}::permissions";
+
+    expect(Cache::has($cacheKey))->toBeTrue('The cache key should exist')
+        ->and(Cache::get($cacheKey))->toBe($user->permissions, 'The cache should contain the user permissions');
+});
+
+test("let's make sure that we are using cache to retrieve/check when the user has the given permission", function() {
+    $user = User::factory()->create();
+
+    $user->givePermissionTo('be an admin');
+
+    DB::listen(fn($query) => throw new Exception('The query should not be executed'));
+    $user->hasPermissionTo('be an admin');
+
+    expect(true)->toBeTrue();
+});
