@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enum\Can;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -37,8 +38,12 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function withPermission(string $name): static
+    public function withPermission(Can|string $name): static
     {
+        if ($name instanceof Can) {
+            $name = $name->value;
+        }
+
         return $this->afterCreating(
             fn(User $user) => $user->givePermissionTo($name)
         );

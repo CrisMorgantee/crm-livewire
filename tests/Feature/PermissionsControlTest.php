@@ -1,5 +1,6 @@
 <?php
 
+use App\Enum\Can;
 use App\Models\Permission;
 use App\Models\User;
 use Database\Seeders\PermissionsSeeder;
@@ -13,26 +14,26 @@ it('should be able to give an user a permission to do something', function() {
     /** @var User $user */
     $user = User::factory()->create();
 
-    $user->givePermissionTo('doSomething');
+    $user->givePermissionTo(Can::BE_AN_ADMIN);
 
     expect($user)
-        ->hasPermissionTo('doSomething')
+        ->hasPermissionTo(Can::BE_AN_ADMIN)
         ->toBeTrue();
 
     assertDatabaseHas('permissions', [
-        'name' => 'doSomething',
+        'name' => Can::BE_AN_ADMIN->value,
     ]);
 
     assertDatabaseHas('permission_user', [
         'user_id'       => $user->id,
-        'permission_id' => Permission::query()->whereName('doSomething')->first()->id, ]);
+        'permission_id' => Permission::query()->whereName(Can::BE_AN_ADMIN->value)->first()->id, ]);
 });
 
 test('permission has to have a seeder', function() {
     seed(PermissionsSeeder::class);
 
     assertDatabaseHas('permissions', [
-        'name' => 'be an admin',
+        'name' => Can::BE_AN_ADMIN->value,
     ]);
 });
 
@@ -40,12 +41,12 @@ test('seed with an admin user', function() {
     seed([PermissionsSeeder::class, UsersSeeder::class]);
 
     assertDatabaseHas('permissions', [
-        'name' => 'be an admin',
+        'name' => Can::BE_AN_ADMIN->value,
     ]);
 
     assertDatabaseHas('permission_user', [
         'user_id'       => User::first()->id,
-        'permission_id' => Permission::query()->whereName('be an admin')->first()->id,
+        'permission_id' => Permission::query()->whereName(Can::BE_AN_ADMIN->value)->first()->id,
     ]);
 });
 
@@ -60,7 +61,7 @@ test('should block the access to admin pages if the user does not have the permi
 test('should allow the access to admin pages if the user has the permission to be an admin', function() {
     $user = User::factory()->create();
 
-    $user->givePermissionTo('be an admin');
+    $user->givePermissionTo(Can::BE_AN_ADMIN);
 
     actingAs($user)
         ->get(route('admin.dashboard'))
@@ -70,7 +71,7 @@ test('should allow the access to admin pages if the user has the permission to b
 test("let's make sure that we are using cache to store user permissions", function() {
     $user = User::factory()->create();
 
-    $user->givePermissionTo('be an admin');
+    $user->givePermissionTo(Can::BE_AN_ADMIN);
 
     $cacheKey = "user::{$user->id}::permissions";
 
@@ -81,10 +82,10 @@ test("let's make sure that we are using cache to store user permissions", functi
 test("let's make sure that we are using cache to retrieve/check when the user has the given permission", function() {
     $user = User::factory()->create();
 
-    $user->givePermissionTo('be an admin');
+    $user->givePermissionTo(Can::BE_AN_ADMIN);
 
     DB::listen(fn($query) => throw new Exception('The query should not be executed'));
-    $user->hasPermissionTo('be an admin');
+    $user->hasPermissionTo(Can::BE_AN_ADMIN);
 
     expect(true)->toBeTrue();
 });
