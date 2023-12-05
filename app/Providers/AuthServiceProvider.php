@@ -17,7 +17,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         foreach (Can::cases() as $case) {
-            Gate::define(str($case->value)->slug()->toString(), fn(User $user) => $user->hasPermissionTo($case));
+            Gate::define($case->value, fn(User $user) => $user->hasPermissionTo($case));
         }
     }
 }
