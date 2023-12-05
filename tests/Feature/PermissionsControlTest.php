@@ -29,7 +29,7 @@ it('should be able to give an user a permission to do something', function() {
         'permission_id' => Permission::query()->whereName(Can::BE_AN_ADMIN->value)->first()->id, ]);
 });
 
-test('permission has to have a seeder', function() {
+test('permission must have a seeder', function() {
     seed(PermissionsSeeder::class);
 
     assertDatabaseHas('permissions', [
