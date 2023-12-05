@@ -13,8 +13,8 @@ class UsersSeeder extends Seeder
         $user = User::factory()
             ->withPermission(Can::BE_AN_ADMIN)
             ->create([
-                'name'  => 'Test User',
-                'email' => 'test@example.com',
+                'name'  => 'Admin User',
+                'email' => 'admin@admin.com',
             ]);
     }
 }
