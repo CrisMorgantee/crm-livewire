@@ -1,6 +1,8 @@
 <?php
 
+use App\Enum\Can;
 use App\Livewire\Admin\Users\Index;
+use App\Models\Permission;
 use App\Models\User;
 
 use function Pest\Laravel\actingAs;
@@ -54,5 +56,35 @@ it('should be able to filter users by name or email', function() {
         ->set('search', 'mary')
         ->assertSet('users', function($usr) use ($user) {
             return $usr->count() === 1 && $usr->first()->is($user);
+        });
+});
+
+it('should be able to filter users by permissions key', function() {
+    $admin = User::factory()->admin()->create([
+        'name'  => 'Joe Doe',
+        'email' => 'admin@example.com'
+    ]);
+
+    $manager = User::factory()->withPermission(Can::BE_AN_MANAGER)->create([
+        'name'  => 'Mary Doe',
+        'email' => 'user2@obs.com'
+    ]);
+
+    $be_an_admin   = Permission::whereName(Can::BE_AN_ADMIN->value)->first();
+    $be_an_manager = Permission::whereName(Can::BE_AN_MANAGER->value)->first();
+
+    actingAs($admin);
+
+    Livewire::test(Index::class)
+        ->assertSet('users', function($usr) {
+            expect($usr)->toHaveCount(2);
+
+            return true;
+        })
+        ->set('search_permissions', [$be_an_manager->id, $be_an_admin->id])
+        ->assertSet('users', function($usr) {
+            expect($usr)->toHaveCount(2);
+
+            return true;
         });
 });
