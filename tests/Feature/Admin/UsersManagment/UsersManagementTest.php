@@ -88,3 +88,29 @@ it('should be able to filter users by permissions key', function() {
             return true;
         });
 });
+
+it('should be able to list deleted users', function() {
+    $admin = User::factory()->admin()->create([
+        'name'  => 'Joe Doe',
+        'email' => 'admin@example.com'
+    ]);
+
+    $deletedUsers = User::factory()->count(2)->create([
+        'deleted_at' => now(),
+    ]);
+
+    actingAs($admin);
+
+    Livewire::test(Index::class)
+        ->assertSet('users', function($usr) {
+            expect($usr)->toHaveCount(1);
+
+            return true;
+        })
+        ->set('search_trash', true)
+        ->assertSet('users', function($usr) {
+            expect($usr)->toHaveCount(2);
+
+            return true;
+        });
+});
