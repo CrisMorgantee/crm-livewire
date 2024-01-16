@@ -5,15 +5,19 @@ export default {
         "./resources/**/**/*.blade.php",
         "./resources/**/**/*.js",
         "./app/View/Components/**/**/*.php",
-        "./app/Livewire/**/**/*.php",                     
+        "./app/Livewire/**/**/*.php",
 
         // Add mary
-        "./vendor/robsontenorio/mary/src/View/Components/**/*.php" 
+        "./vendor/robsontenorio/mary/src/View/Components/**/*.php"
     ],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                confortaa: ["Comfortaa", "sans-serif"],
+            },
+        },
     },
-    
+
     // Add daisyUI
-    plugins: [require("daisyui")] 
+    plugins: [require("daisyui")]
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enum\Can;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
 
@@ -10,8 +11,8 @@ class PermissionsSeeder extends Seeder
     public function run(): void
     {
         Permission::query()->insert([
-            ['name' => 'be an admin'],
-            ['name' => 'be an manager'],
+            ['name' => Can::BE_AN_ADMIN->value],
+            ['name' => Can::BE_AN_MANAGER->value],
         ]);
     }
 }

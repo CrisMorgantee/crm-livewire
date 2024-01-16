@@ -30,10 +30,23 @@ class Index extends Component
 
     public bool $search_trash = false;
 
+    public string $sortDirection = 'asc';
+
+    public string $sortColumnBy = 'name';
+
     public function mount(): void
     {
         $this->authorize(Can::BE_AN_ADMIN->value);
         $this->filterPermissions();
+    }
+
+    #[Computed]
+    public function filterPermissions(?string $value = ''): void
+    {
+        $this->permissionsToSearch = Permission::query()
+            ->when($value, fn(Builder $q) => $q->where('name', 'like', '%' . $value . '%'))
+            ->orderBy('name')
+            ->get();
     }
 
     public function render(): View
@@ -70,6 +83,7 @@ class Index extends Component
                 $this->search_trash,
                 fn(Builder $q) => $q->onlyTrashed() // @phpstan-ignore-line
             )
+            ->orderBy($this->sortColumnBy, $this->sortDirection)
             ->get();
     }
 
@@ -77,19 +91,16 @@ class Index extends Component
     public function headers(): array
     {
         return [
-            ['key' => 'id', 'label' => '#'],
-            ['key' => 'name', 'label' => 'Name'],
-            ['key' => 'email', 'label' => 'Email'],
-            ['key' => 'permissions', 'label' => 'Permissions'],
+            ['key' => 'id', 'label' => '#', 'sortColumnBy' => $this->sortColumnBy, 'sortDirection' => $this->sortDirection, 'class' => 'text-gray-200'],
+            ['key' => 'name', 'label' => 'Nome', 'sortColumnBy' => $this->sortColumnBy, 'sortDirection' => $this->sortDirection, 'class' => 'text-gray-200'],
+            ['key' => 'email', 'label' => 'Email', 'sortColumnBy' => $this->sortColumnBy, 'sortDirection' => $this->sortDirection, 'class' => 'text-gray-200'],
+            ['key' => 'permissions', 'label' => 'Permissões', 'sortColumnBy' => $this->sortColumnBy, 'sortDirection' => $this->sortDirection, 'class' => 'text-gray-200'],
         ];
     }
 
-    #[Computed]
-    public function filterPermissions(?string $value = ''): void
+    public function sortBy(string $column, string $direction): void
     {
-        $this->permissionsToSearch = Permission::query()
-            ->when($value, fn(Builder $q) => $q->where('name', 'like', '%' . $value . '%'))
-            ->orderBy('name')
-            ->get();
+        $this->sortColumnBy  = $column;
+        $this->sortDirection = $direction;
     }
 }

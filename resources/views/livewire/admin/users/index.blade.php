@@ -1,11 +1,11 @@
 <div>
-    <x-header title="Users" separator/>
+    <x-header title="Colaboradores" separator/>
 
     <div class="flex items-center space-x-4 mb-4">
         <div class="w-1/3">
             <x-input
-                label="Filter by name or email"
-                placeholder="Filter by name or email..."
+                label="Buscar por nome ou email"
+                placeholder="Buscar por nome ou email..."
                 wire:model.live="search"
                 icon="o-magnifying-glass"
             />
@@ -13,28 +13,41 @@
 
         <div class="w-1/3">
             <x-choices
-                label="Permissions"
+                label="Permissões"
                 :options="$permissionsToSearch"
                 wire:model.live="search_permissions"
                 search-function="filterPermissions"
                 option-label="name"
                 searchable
-                no-result-text="No permissions found."
+                no-result-text="Nenhuma permissão encontrada"
 
             />
-
         </div>
 
-        <x-checkbox
-            label='Show deleted users'
-            wire:model.live="search_trash"
-            class="checkbox-primary"
-            right
-            tight
-        />
+        <div class="w-full">
+            <x-checkbox
+                label='Mostrar deletados'
+                wire:model.live="search_trash"
+                class="checkbox-primary"
+                right
+                tight
+            />
+        </div>
     </div>
 
     <x-table :headers=" $this->headers" :rows="$this->users">
+        @scope('header_id', $header)
+        <x-table-th :$header name="id"/>
+        @endscope
+
+        @scope('header_name', $header)
+        <x-table-th :$header name="name"/>
+        @endscope
+
+        @scope('header_email', $header)
+        <x-table-th :$header name="email"/>
+        @endscope
+
         @scope('cell_permissions', $user)
         @foreach($user->permissions as $permission)
             <x-badge :value="$permission->name" class="badge-primary"/>

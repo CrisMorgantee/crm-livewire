@@ -5,6 +5,8 @@ use App\Livewire\Admin\Users\Index;
 use App\Models\Permission;
 use App\Models\User;
 
+use Livewire\Livewire;
+
 use function Pest\Laravel\actingAs;
 
 it('should be able to access the route admin/users', function() {
@@ -24,11 +26,12 @@ test('make sure that the route is protected by the permission BE_AN_ADMIN', func
 });
 
 test("let's create a livewire component to list all users in the page", function() {
+    actingAs(User::factory()->admin()->create());
     $users = User::factory()->count(10)->create();
 
     $lw = Livewire::test(Index::class)
-        ->assertSet('users', function($usr) use ($users) {
-            return $usr->count() === $users->count();
+        ->assertSet('users', function($users) {
+            return $users->count() === 11;
         });
 
     foreach ($users as $user) {
