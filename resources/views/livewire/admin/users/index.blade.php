@@ -5,7 +5,6 @@
         <div class="w-1/3">
             <x-input
                 label="Buscar por nome ou email"
-                placeholder="Buscar por nome ou email..."
                 wire:model.live="search"
                 icon="o-magnifying-glass"
             />
@@ -20,22 +19,25 @@
                 option-label="name"
                 searchable
                 no-result-text="Nenhuma permissão encontrada"
-
             />
         </div>
 
-        <div class="w-full">
-            <x-checkbox
-                label='Mostrar deletados'
-                wire:model.live="search_trash"
-                class="checkbox-primary"
-                right
-                tight
-            />
-        </div>
+        <x-select
+            label="Resultados por página"
+            wire:model.live="perPage"
+            :options="[['id' => 5, 'name' => 5], ['id' => 15, 'name' => 15], ['id' => 25, 'name' => 25], ['id' => 50, 'name' => 50]]"
+        />
+
+        <x-checkbox
+            label='Mostrar deletados'
+            wire:model.live="search_trash"
+            class="checkbox-primary"
+            right
+            tight
+        />
     </div>
 
-    <x-table :headers=" $this->headers" :rows="$this->users">
+    <x-table :headers="$this->headers" :rows="$this->users">
         @scope('header_id', $header)
         <x-table-th :$header name="id"/>
         @endscope
@@ -62,4 +64,6 @@
         @endunless
         @endscope
     </x-table>
+
+    {{ $this->users->links()}}
 </div>

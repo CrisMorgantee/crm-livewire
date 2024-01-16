@@ -5,23 +5,23 @@ namespace App\Livewire\Admin\Users;
 use App\Enum\Can;
 use App\Models\Permission;
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 /**
- * @property-read LengthAwarePaginator|User[] $users
+ * @property-read Collection|User[] $users
  * @property-read array $headers
  */
 class Index extends Component
 {
-    /**
-     * @var string|null
-     */
+    use WithPagination;
+
     public ?string $search = null;
 
     public array $search_permissions = [];
@@ -32,7 +32,9 @@ class Index extends Component
 
     public string $sortDirection = 'asc';
 
-    public string $sortColumnBy = 'name';
+    public string $sortColumnBy = 'id';
+
+    public int $perPage = 10;
 
     public function mount(): void
     {
@@ -55,9 +57,12 @@ class Index extends Component
     }
 
     #[Computed]
-    public function users(): Collection
+    public function users(): Collection|LengthAwarePaginator
     {
+        $this->validate(['search_permissions' => 'exists:permissions,id']);
+
         return User::query()
+            ->with('permissions')
             ->when(
                 $this->search,
                 fn(Builder $q) => $q
@@ -84,7 +89,7 @@ class Index extends Component
                 fn(Builder $q) => $q->onlyTrashed() // @phpstan-ignore-line
             )
             ->orderBy($this->sortColumnBy, $this->sortDirection)
-            ->get();
+            ->paginate($this->perPage);
     }
 
     #[Computed]
